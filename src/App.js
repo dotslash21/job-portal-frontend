@@ -1,5 +1,6 @@
 import React from "react";
 import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
+import { AuthProvider, PrivateRoute } from "react-auth-kit";
 
 import "./App.css";
 import Home from "./pages/Home";
@@ -11,27 +12,34 @@ import ViewJobs from "./pages/ViewJobs";
 
 function App() {
   return (
-    <Router>
-      <NavBar />
+    <AuthProvider
+      authStorageType={"localstorage"}
+      authStorageName={"jobportal_auth_t"}
+      authTimeStorageName={"jobportal_auth_time"}
+      stateStorageName={"jobportal_auth_state"}
+    >
+      <Router>
+        <NavBar />
 
-      <Switch>
-        <Route path="/postjob">
-          <PostJob />
-        </Route>
-        <Route path="/viewjobs">
-          <ViewJobs />
-        </Route>
-        <Route path="/signin">
-          <SignIn />
-        </Route>
-        <Route path="/signup">
-          <SignUp />
-        </Route>
-        <Route path="/">
-          <Home />
-        </Route>
-      </Switch>
-    </Router>
+        <Switch>
+          <PrivateRoute
+            component={PostJob}
+            path="/postjob"
+            loginPath="/signin"
+            exact
+          />
+          <PrivateRoute
+            component={ViewJobs}
+            path="/viewjobs"
+            loginPath="/signin"
+            exact
+          />
+          <Route component={SignIn} path="/signin" exact />
+          <Route component={SignUp} path="/signup" exact />
+          <Route component={Home} path="/" exact />
+        </Switch>
+      </Router>
+    </AuthProvider>
   );
 }
 
